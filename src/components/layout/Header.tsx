@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Menu, X, Phone, Mail } from 'lucide-react';
 
 const navItems = [
@@ -53,12 +54,14 @@ export default function Header() {
       <div className="container flex items-center justify-between py-3">
         {/* 로고 */}
         <Link href="/" className="flex items-center gap-2">
-          <div
-            style={{ backgroundColor: 'var(--color-primary)' }}
-            className="w-9 h-9 rounded-lg flex items-center justify-center text-white font-bold text-sm"
-          >
-            AW
-          </div>
+          <Image
+            src="/logo.gif"
+            alt="올윈비시지 로고"
+            width={80}
+            height={40}
+            className="object-contain"
+            unoptimized
+          />
           <div>
             <div style={{ color: 'var(--color-primary)' }} className="font-bold text-lg leading-tight">
               (주)올윈비시지

@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { Phone, Printer, Mail, MapPin } from 'lucide-react';
 
 export default function Footer() {
@@ -8,10 +9,15 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* 회사 정보 */}
           <div className="md:col-span-2">
-            <div className="flex items-center gap-2 mb-4">
-              <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center font-bold text-sm">
-                AW
-              </div>
+            <div className="flex items-center gap-3 mb-4">
+              <Image
+                src="/logo.gif"
+                alt="올윈비시지 로고"
+                width={70}
+                height={35}
+                className="object-contain brightness-0 invert"
+                unoptimized
+              />
               <span className="font-bold text-lg">(주)올윈비시지</span>
             </div>
             <p className="text-blue-200 text-sm mb-4 leading-relaxed">
