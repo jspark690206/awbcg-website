@@ -1,0 +1,11 @@
+# 임시 추출 폴더
+_ceo_extract/
+_pptx_extract/
+_pdf_text.txt
+_proj_text.txt
+
+# bkit 내부 상태 파일
+.bkit/
+
+# 웹 프로젝트 (별도 저장소로 관리)
+web/
