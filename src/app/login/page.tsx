@@ -1,11 +1,11 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/lib/userAuth';
 import { LogIn, CheckCircle } from 'lucide-react';
 
-export default function LoginPage() {
+function LoginContent() {
   const { user, loading, signIn } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -38,9 +38,7 @@ export default function LoginPage() {
   return (
     <div className="min-h-[calc(100vh-160px)] flex items-center justify-center px-4 py-16">
       <div className="w-full max-w-md">
-        {/* 카드 */}
         <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
-          {/* 헤더 */}
           <div className="px-8 pt-8 pb-6 text-center" style={{ background: 'linear-gradient(135deg, #0D2B5E 0%, #1A4A8A 100%)' }}>
             <div className="w-14 h-14 rounded-2xl bg-white/20 flex items-center justify-center mx-auto mb-3">
               <LogIn size={26} className="text-white" />
@@ -49,7 +47,6 @@ export default function LoginPage() {
             <p className="text-blue-200 text-sm mt-1">Google 계정으로 간편하게 시작하세요</p>
           </div>
 
-          {/* 혜택 안내 */}
           <div className="px-8 py-5 bg-blue-50 border-b border-blue-100">
             <ul className="space-y-2">
               {[
@@ -65,7 +62,6 @@ export default function LoginPage() {
             </ul>
           </div>
 
-          {/* 로그인 버튼 */}
           <div className="px-8 py-6 space-y-4">
             <button
               onClick={handleSignIn}
@@ -94,5 +90,13 @@ export default function LoginPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={null}>
+      <LoginContent />
+    </Suspense>
   );
 }
