@@ -17,7 +17,7 @@ export default function LocationPage() {
         {/* 지도 */}
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
           <iframe
-            src="https://maps.google.com/maps?q=%EB%B6%80%EC%82%B0%EA%B4%91%EC%97%AD%EC%8B%9C+%EB%B6%81%EA%B5%AC+%EB%8D%95%EC%B2%9C%EB%A1%9C+155&t=&z=17&ie=UTF8&iwloc=&output=embed"
+            src="https://maps.google.com/maps?q=35.2082,128.9974&z=17&t=m&hl=ko&output=embed"
             width="100%"
             height="360"
             style={{ border: 0 }}
