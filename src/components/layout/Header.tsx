@@ -79,7 +79,7 @@ export default function Header() {
             <a href="tel:051-343-4047" className="flex items-center gap-1 hover:text-blue-200 transition-colors">
               <Phone size={11} /> 051-343-4047
             </a>
-            <a href="mailto:admin@awbcg.co.kr" className="flex items-center gap-1 hover:text-blue-200 transition-colors">
+            <a href="https://outlook.office.com/mail/deeplink/compose?to=admin@awbcg.co.kr" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 hover:text-blue-200 transition-colors">
               <Mail size={11} /> admin@awbcg.co.kr
             </a>
             <span className="text-white/40">|</span>
