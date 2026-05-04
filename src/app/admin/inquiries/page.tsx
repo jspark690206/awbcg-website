@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { adminStore, Inquiry } from '@/lib/adminStore';
+import { firestoreStore, Inquiry } from '@/lib/firestoreStore';
 import { MessageSquare, ChevronDown } from 'lucide-react';
 
 const STATUS_OPTIONS = [
@@ -15,21 +15,24 @@ export default function InquiriesPage() {
   const [selected, setSelected] = useState<Inquiry | null>(null);
   const [reply, setReply] = useState('');
   const [filter, setFilter] = useState<'all' | 'new' | 'inProgress' | 'done'>('all');
+  const [loading, setLoading] = useState(true);
 
-  useEffect(() => { setInquiries(adminStore.inquiries.getAll()); }, []);
+  useEffect(() => {
+    firestoreStore.inquiries.getAll().then(data => { setInquiries(data); setLoading(false); });
+  }, []);
 
   const filtered = filter === 'all' ? inquiries : inquiries.filter(i => i.status === filter);
 
-  const updateStatus = (id: string, status: Inquiry['status']) => {
-    const updated = adminStore.inquiries.update(id, { status });
-    setInquiries(updated);
+  const updateStatus = async (id: string, status: Inquiry['status']) => {
+    await firestoreStore.inquiries.update(id, { status });
+    setInquiries(prev => prev.map(i => i.id === id ? { ...i, status } : i));
     if (selected?.id === id) setSelected(prev => prev ? { ...prev, status } : null);
   };
 
-  const saveReply = () => {
+  const saveReply = async () => {
     if (!selected) return;
-    const updated = adminStore.inquiries.update(selected.id, { reply, status: 'done' });
-    setInquiries(updated);
+    await firestoreStore.inquiries.update(selected.id, { reply, status: 'done' });
+    setInquiries(prev => prev.map(i => i.id === selected.id ? { ...i, reply, status: 'done' } : i));
     setSelected(prev => prev ? { ...prev, reply, status: 'done' } : null);
   };
 
@@ -42,7 +45,6 @@ export default function InquiriesPage() {
           </div>
           <h1 className="text-2xl font-bold" style={{ color: 'var(--color-primary)' }}>문의 관리</h1>
         </div>
-        {/* 필터 */}
         <div className="flex gap-2">
           {[{v:'all',l:'전체'}, {v:'new',l:'신규'}, {v:'inProgress',l:'처리중'}, {v:'done',l:'완료'}].map(f => (
             <button key={f.v} onClick={() => setFilter(f.v as typeof filter)}
@@ -54,10 +56,11 @@ export default function InquiriesPage() {
         </div>
       </div>
 
+      {loading && <div className="text-center text-gray-400 py-12">불러오는 중...</div>}
+
       <div className="flex gap-5">
-        {/* 목록 */}
         <div className="flex-1 space-y-3 min-w-0">
-          {filtered.length === 0 && <div className="text-center text-gray-400 py-12 bg-white rounded-2xl border border-gray-100">문의가 없습니다.</div>}
+          {!loading && filtered.length === 0 && <div className="text-center text-gray-400 py-12 bg-white rounded-2xl border border-gray-100">문의가 없습니다.</div>}
           {filtered.map((inq) => {
             const s = STATUS_OPTIONS.find(o => o.value === inq.status)!;
             return (
@@ -85,7 +88,6 @@ export default function InquiriesPage() {
           })}
         </div>
 
-        {/* 상세 패널 */}
         {selected && (
           <div className="w-80 flex-shrink-0 bg-white rounded-2xl border border-gray-100 shadow-sm p-5 space-y-4 self-start sticky top-6">
             <h3 className="font-bold text-base" style={{ color: 'var(--color-primary)' }}>문의 상세</h3>
@@ -98,8 +100,6 @@ export default function InquiriesPage() {
               ))}
             </div>
             <div className="p-3 rounded-xl bg-gray-50 text-sm text-gray-600 leading-relaxed">{selected.message}</div>
-
-            {/* 상태 변경 */}
             <div>
               <label className="text-xs font-medium text-gray-500 block mb-1.5">처리 상태</label>
               <div className="relative">
@@ -110,8 +110,6 @@ export default function InquiriesPage() {
                 <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
               </div>
             </div>
-
-            {/* 답변 */}
             <div>
               <label className="text-xs font-medium text-gray-500 block mb-1.5">답변 내용</label>
               <textarea value={reply} onChange={e => setReply(e.target.value)} rows={4}

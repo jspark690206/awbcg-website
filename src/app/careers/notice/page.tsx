@@ -2,14 +2,16 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { adminStore, Career } from '@/lib/adminStore';
+import { firestoreStore, Career } from '@/lib/firestoreStore';
 import { Briefcase, Calendar } from 'lucide-react';
 
 export default function CareerNoticePage() {
   const [careers, setCareers] = useState<Career[]>([]);
 
   useEffect(() => {
-    setCareers(adminStore.careers.getAll().filter((c) => c.published));
+    firestoreStore.careers.getAll().then(data => {
+      setCareers(data.filter(c => c.published));
+    });
   }, []);
 
   return (

@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { adminStore, Notice } from '@/lib/adminStore';
+import { firestoreStore, Notice } from '@/lib/firestoreStore';
 
 const PAGE_SIZE = 10;
 
@@ -12,7 +12,9 @@ export default function NewsPage() {
   const [query, setQuery] = useState('');
 
   useEffect(() => {
-    setNotices(adminStore.notices.getAll().filter((n) => n.published));
+    firestoreStore.notices.getAll().then(data => {
+      setNotices(data.filter(n => n.published));
+    });
   }, []);
 
   const filtered = notices.filter((n) =>

@@ -1,32 +1,45 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { adminStore, Notice } from '@/lib/adminStore';
+import { firestoreStore, Notice } from '@/lib/firestoreStore';
 import { Bell, Plus, Pencil, Trash2, Eye, EyeOff } from 'lucide-react';
 
-const empty = (): Notice => ({ id: Date.now().toString(), title: '', content: '', published: true, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() });
+const emptyNotice = (): Omit<Notice, 'id' | 'createdAt' | 'updatedAt'> & { id: string; createdAt: string; updatedAt: string } =>
+  ({ id: '', title: '', content: '', published: true, createdAt: '', updatedAt: '' });
 
 export default function NoticesPage() {
   const [notices, setNotices] = useState<Notice[]>([]);
   const [editing, setEditing] = useState<Notice | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  useEffect(() => { setNotices(adminStore.notices.getAll()); }, []);
+  useEffect(() => {
+    firestoreStore.notices.getAll().then(data => { setNotices(data); setLoading(false); });
+  }, []);
 
-  const save = () => {
+  const save = async () => {
     if (!editing || !editing.title.trim()) return;
-    const updated = adminStore.notices.save({ ...editing, updatedAt: new Date().toISOString() });
-    setNotices(updated);
+    const isNew = !notices.find(n => n.id === editing.id);
+    if (isNew) {
+      const id = await firestoreStore.notices.add({ title: editing.title, content: editing.content, published: editing.published });
+      const now = new Date().toISOString();
+      setNotices(prev => [{ ...editing, id, createdAt: now, updatedAt: now }, ...prev]);
+    } else {
+      await firestoreStore.notices.update(editing.id, { title: editing.title, content: editing.content, published: editing.published });
+      const now = new Date().toISOString();
+      setNotices(prev => prev.map(n => n.id === editing.id ? { ...n, title: editing.title, content: editing.content, published: editing.published, updatedAt: now } : n));
+    }
     setEditing(null);
   };
 
-  const del = (id: string) => {
+  const del = async (id: string) => {
     if (!confirm('삭제하시겠습니까?')) return;
-    setNotices(adminStore.notices.delete(id));
+    await firestoreStore.notices.delete(id);
+    setNotices(prev => prev.filter(n => n.id !== id));
   };
 
-  const toggle = (n: Notice) => {
-    const updated = adminStore.notices.save({ ...n, published: !n.published });
-    setNotices(updated);
+  const toggle = async (n: Notice) => {
+    await firestoreStore.notices.update(n.id, { published: !n.published });
+    setNotices(prev => prev.map(item => item.id === n.id ? { ...item, published: !n.published } : item));
   };
 
   return (
@@ -38,16 +51,18 @@ export default function NoticesPage() {
           </div>
           <h1 className="text-2xl font-bold" style={{ color: 'var(--color-primary)' }}>공지사항 관리</h1>
         </div>
-        <button onClick={() => setEditing(empty())}
+        <button onClick={() => setEditing(emptyNotice() as Notice)}
           className="flex items-center gap-2 px-4 py-2 rounded-xl text-white text-sm font-medium hover:opacity-90 transition-opacity"
           style={{ backgroundColor: 'var(--color-secondary)' }}>
           <Plus size={16} /> 새 공지 작성
         </button>
       </div>
 
+      {loading && <div className="text-center text-gray-400 py-12">불러오는 중...</div>}
+
       <div className="flex gap-5">
-        {/* 목록 */}
         <div className="flex-1 space-y-3">
+          {!loading && notices.length === 0 && <div className="text-center text-gray-400 py-12 bg-white rounded-2xl border border-gray-100">공지사항이 없습니다.</div>}
           {notices.map(n => (
             <div key={n.id} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 flex items-center gap-4">
               <div className="flex-1 min-w-0">
@@ -55,7 +70,7 @@ export default function NoticesPage() {
                   {n.published
                     ? <span className="text-xs px-2 py-0.5 rounded-full font-medium" style={{ backgroundColor: 'rgba(0,168,120,0.1)', color: '#00A878' }}>게시중</span>
                     : <span className="text-xs px-2 py-0.5 rounded-full font-medium bg-gray-100 text-gray-400">숨김</span>}
-                  <span className="text-xs text-gray-400">{n.updatedAt.slice(0,10)}</span>
+                  <span className="text-xs text-gray-400">{n.updatedAt.slice(0, 10)}</span>
                 </div>
                 <p className="font-medium text-sm text-gray-800 truncate">{n.title}</p>
               </div>
@@ -72,14 +87,12 @@ export default function NoticesPage() {
               </div>
             </div>
           ))}
-          {notices.length === 0 && <div className="text-center text-gray-400 py-12 bg-white rounded-2xl border border-gray-100">공지사항이 없습니다.</div>}
         </div>
 
-        {/* 편집 패널 */}
         {editing && (
           <div className="w-96 flex-shrink-0 bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-4 self-start sticky top-6">
             <h3 className="font-bold text-base" style={{ color: 'var(--color-primary)' }}>
-              {editing.createdAt === editing.updatedAt && !notices.find(n=>n.id===editing.id) ? '새 공지 작성' : '공지 수정'}
+              {notices.find(n => n.id === editing.id) ? '공지 수정' : '새 공지 작성'}
             </h3>
             <div>
               <label className="text-xs font-medium text-gray-500 block mb-1.5">제목 *</label>

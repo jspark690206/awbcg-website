@@ -2,14 +2,16 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { adminStore, Notice } from '@/lib/adminStore';
+import { firestoreStore, Notice } from '@/lib/firestoreStore';
 import { Phone, Monitor, ChevronRight } from 'lucide-react';
 
 export default function InfoSection() {
   const [notices, setNotices] = useState<Notice[]>([]);
 
   useEffect(() => {
-    setNotices(adminStore.notices.getAll().filter((n) => n.published).slice(0, 9));
+    firestoreStore.notices.getAll().then(data => {
+      setNotices(data.filter(n => n.published).slice(0, 9));
+    });
   }, []);
 
   return (

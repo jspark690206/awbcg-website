@@ -1,27 +1,39 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { adminStore, QAItem } from '@/lib/adminStore';
+import { firestoreStore, QAItem } from '@/lib/firestoreStore';
 import { HelpCircle, Plus, Pencil, Trash2 } from 'lucide-react';
 
 const CATS = ['일반', 'MES', 'AI·BigData', '지원사업', '유지보수'];
-const empty = (): QAItem => ({ id: Date.now().toString(), question: '', category: '일반', answer: '', published: true, createdAt: new Date().toISOString() });
+const emptyQA = (): QAItem => ({ id: '', question: '', category: '일반', answer: '', published: true, createdAt: '' });
 
 export default function QAPage() {
   const [items, setItems] = useState<QAItem[]>([]);
   const [editing, setEditing] = useState<QAItem | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  useEffect(() => { setItems(adminStore.qa.getAll()); }, []);
+  useEffect(() => {
+    firestoreStore.qa.getAll().then(data => { setItems(data); setLoading(false); });
+  }, []);
 
-  const save = () => {
+  const save = async () => {
     if (!editing || !editing.question.trim() || !editing.answer.trim()) return;
-    setItems(adminStore.qa.save(editing));
+    const isNew = !items.find(i => i.id === editing.id);
+    if (isNew) {
+      const id = await firestoreStore.qa.add({ question: editing.question, category: editing.category, answer: editing.answer, published: editing.published });
+      const now = new Date().toISOString();
+      setItems(prev => [{ ...editing, id, createdAt: now }, ...prev]);
+    } else {
+      await firestoreStore.qa.update(editing.id, { question: editing.question, category: editing.category, answer: editing.answer, published: editing.published });
+      setItems(prev => prev.map(i => i.id === editing.id ? { ...i, ...editing } : i));
+    }
     setEditing(null);
   };
 
-  const del = (id: string) => {
+  const del = async (id: string) => {
     if (!confirm('삭제하시겠습니까?')) return;
-    setItems(adminStore.qa.delete(id));
+    await firestoreStore.qa.delete(id);
+    setItems(prev => prev.filter(i => i.id !== id));
   };
 
   return (
@@ -33,15 +45,18 @@ export default function QAPage() {
           </div>
           <h1 className="text-2xl font-bold" style={{ color: 'var(--color-primary)' }}>Q&A 관리</h1>
         </div>
-        <button onClick={() => setEditing(empty())}
+        <button onClick={() => setEditing(emptyQA())}
           className="flex items-center gap-2 px-4 py-2 rounded-xl text-white text-sm font-medium hover:opacity-90"
           style={{ backgroundColor: '#8B5CF6' }}>
           <Plus size={16} /> Q&A 추가
         </button>
       </div>
 
+      {loading && <div className="text-center text-gray-400 py-12">불러오는 중...</div>}
+
       <div className="flex gap-5">
         <div className="flex-1 space-y-3">
+          {!loading && items.length === 0 && <div className="text-center text-gray-400 py-12 bg-white rounded-2xl border border-gray-100">Q&A가 없습니다.</div>}
           {items.map(item => (
             <div key={item.id} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
               <div className="flex items-start justify-between gap-4">
@@ -59,12 +74,11 @@ export default function QAPage() {
               </div>
             </div>
           ))}
-          {items.length === 0 && <div className="text-center text-gray-400 py-12 bg-white rounded-2xl border border-gray-100">Q&A가 없습니다.</div>}
         </div>
 
         {editing && (
           <div className="w-96 flex-shrink-0 bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-4 self-start sticky top-6">
-            <h3 className="font-bold text-base" style={{ color: 'var(--color-primary)' }}>Q&A {items.find(i=>i.id===editing.id) ? '수정' : '추가'}</h3>
+            <h3 className="font-bold text-base" style={{ color: 'var(--color-primary)' }}>Q&A {items.find(i => i.id === editing.id) ? '수정' : '추가'}</h3>
             <div>
               <label className="text-xs font-medium text-gray-500 block mb-1.5">카테고리</label>
               <select value={editing.category} onChange={e => setEditing({ ...editing, category: e.target.value })}

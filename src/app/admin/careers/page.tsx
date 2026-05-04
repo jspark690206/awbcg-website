@@ -1,29 +1,44 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { adminStore, Career } from '@/lib/adminStore';
+import { firestoreStore, Career } from '@/lib/firestoreStore';
 import { Briefcase, Plus, Pencil, Trash2, Eye, EyeOff } from 'lucide-react';
 
-const empty = (): Career => ({ id: Date.now().toString(), title: '', department: '', type: '정규직', deadline: '', description: '', published: true, createdAt: new Date().toISOString() });
+const emptyCareer = (): Career => ({ id: '', title: '', department: '', type: '정규직', deadline: '', description: '', published: true, createdAt: '' });
 
 export default function CareersPage() {
   const [careers, setCareers] = useState<Career[]>([]);
   const [editing, setEditing] = useState<Career | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  useEffect(() => { setCareers(adminStore.careers.getAll()); }, []);
+  useEffect(() => {
+    firestoreStore.careers.getAll().then(data => { setCareers(data); setLoading(false); });
+  }, []);
 
-  const save = () => {
+  const save = async () => {
     if (!editing || !editing.title.trim()) return;
-    setCareers(adminStore.careers.save(editing));
+    const isNew = !careers.find(c => c.id === editing.id);
+    if (isNew) {
+      const id = await firestoreStore.careers.add({ title: editing.title, department: editing.department, type: editing.type, deadline: editing.deadline, description: editing.description, published: editing.published });
+      const now = new Date().toISOString();
+      setCareers(prev => [{ ...editing, id, createdAt: now }, ...prev]);
+    } else {
+      await firestoreStore.careers.update(editing.id, { title: editing.title, department: editing.department, type: editing.type, deadline: editing.deadline, description: editing.description, published: editing.published });
+      setCareers(prev => prev.map(c => c.id === editing.id ? { ...c, ...editing } : c));
+    }
     setEditing(null);
   };
 
-  const del = (id: string) => {
+  const del = async (id: string) => {
     if (!confirm('삭제하시겠습니까?')) return;
-    setCareers(adminStore.careers.delete(id));
+    await firestoreStore.careers.delete(id);
+    setCareers(prev => prev.filter(c => c.id !== id));
   };
 
-  const toggle = (c: Career) => setCareers(adminStore.careers.save({ ...c, published: !c.published }));
+  const toggle = async (c: Career) => {
+    await firestoreStore.careers.update(c.id, { published: !c.published });
+    setCareers(prev => prev.map(item => item.id === c.id ? { ...item, published: !c.published } : item));
+  };
 
   return (
     <div className="p-8">
@@ -34,15 +49,18 @@ export default function CareersPage() {
           </div>
           <h1 className="text-2xl font-bold" style={{ color: 'var(--color-primary)' }}>채용공고 관리</h1>
         </div>
-        <button onClick={() => setEditing(empty())}
+        <button onClick={() => setEditing(emptyCareer())}
           className="flex items-center gap-2 px-4 py-2 rounded-xl text-white text-sm font-medium hover:opacity-90"
           style={{ backgroundColor: 'var(--color-accent)' }}>
           <Plus size={16} /> 공고 등록
         </button>
       </div>
 
+      {loading && <div className="text-center text-gray-400 py-12">불러오는 중...</div>}
+
       <div className="flex gap-5">
         <div className="flex-1 space-y-3">
+          {!loading && careers.length === 0 && <div className="text-center text-gray-400 py-12 bg-white rounded-2xl border border-gray-100">채용공고가 없습니다.</div>}
           {careers.map(c => (
             <div key={c.id} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 flex items-center gap-4">
               <div className="flex-1 min-w-0">
@@ -63,12 +81,11 @@ export default function CareersPage() {
               </div>
             </div>
           ))}
-          {careers.length === 0 && <div className="text-center text-gray-400 py-12 bg-white rounded-2xl border border-gray-100">채용공고가 없습니다.</div>}
         </div>
 
         {editing && (
           <div className="w-96 flex-shrink-0 bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-4 self-start sticky top-6">
-            <h3 className="font-bold text-base" style={{ color: 'var(--color-primary)' }}>채용공고 {careers.find(c=>c.id===editing.id) ? '수정' : '등록'}</h3>
+            <h3 className="font-bold text-base" style={{ color: 'var(--color-primary)' }}>채용공고 {careers.find(c => c.id === editing.id) ? '수정' : '등록'}</h3>
             {[
               { label: '포지션 *', key: 'title', placeholder: '예) MES 개발 엔지니어' },
               { label: '부서', key: 'department', placeholder: '예) 제조실행팀' },
