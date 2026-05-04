@@ -4,6 +4,7 @@ import './globals.css';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import FloatingContact from '@/components/layout/FloatingContact';
+import Providers from '@/components/Providers';
 
 const notoSansKR = Noto_Sans_KR({
   subsets: ['latin'],
@@ -43,12 +44,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="ko" className={`h-full ${notoSansKR.variable} ${inter.variable}`}>
       <body className="min-h-full flex flex-col antialiased">
-        <Header />
-        <main className="flex-1 pt-[82px]">
-          {children}
-        </main>
-        <Footer />
-        <FloatingContact />
+        <Providers>
+          <Header />
+          <main className="flex-1 pt-[82px]">
+            {children}
+          </main>
+          <Footer />
+          <FloatingContact />
+        </Providers>
       </body>
     </html>
   );

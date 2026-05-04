@@ -1,10 +1,11 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Menu, X, Phone, Mail } from 'lucide-react';
+import { Menu, X, Phone, Mail, LogIn, LogOut, User } from 'lucide-react';
+import { useAuth } from '@/lib/userAuth';
 
 const navItems = [
   { label: '회사현황', href: '/about', sub: [
@@ -50,6 +51,13 @@ export default function Header() {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
   const pathname = usePathname();
+  const router = useRouter();
+  const { user, logout } = useAuth();
+
+  const handleLogout = async () => {
+    await logout();
+    router.push('/');
+  };
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 10);
@@ -78,6 +86,22 @@ export default function Header() {
             <Link href="/sitemap" className="hover:text-blue-200 transition-colors">SITEMAP</Link>
             <Link href="/admin" className="hover:text-blue-200 transition-colors">ADMIN</Link>
             <Link href="/en" className="hover:text-blue-200 transition-colors">ENGLISH</Link>
+            <span className="text-white/40">|</span>
+            {user ? (
+              <div className="flex items-center gap-2">
+                <Link href="/mypage" className="flex items-center gap-1 hover:text-blue-200 transition-colors">
+                  <User size={11} />
+                  <span className="max-w-[80px] truncate">{user.displayName ?? '마이페이지'}</span>
+                </Link>
+                <button onClick={handleLogout} className="flex items-center gap-1 hover:text-blue-200 transition-colors">
+                  <LogOut size={11} /> 로그아웃
+                </button>
+              </div>
+            ) : (
+              <Link href="/login" className="flex items-center gap-1 hover:text-blue-200 transition-colors">
+                <LogIn size={11} /> 로그인
+              </Link>
+            )}
           </div>
         </div>
       </div>

@@ -1,6 +1,6 @@
 import {
   collection, doc, getDocs, addDoc, updateDoc, deleteDoc,
-  query, orderBy, serverTimestamp, Timestamp
+  query, orderBy, where, serverTimestamp, Timestamp
 } from 'firebase/firestore';
 import { db } from './firebase';
 
@@ -16,6 +16,8 @@ export interface Inquiry {
   status: 'new' | 'inProgress' | 'done';
   createdAt: string;
   reply?: string;
+  userId?: string;
+  userEmail?: string;
 }
 
 export interface Notice {
@@ -74,10 +76,25 @@ async function remove(col: string, id: string): Promise<void> {
   await deleteDoc(doc(db, col, id));
 }
 
+async function getByUser<T extends { id: string }>(col: string, userId: string): Promise<T[]> {
+  const q = query(collection(db, col), where('userId', '==', userId));
+  const snap = await getDocs(q);
+  const docs = snap.docs.map(d => ({
+    id: d.id,
+    ...d.data(),
+    createdAt: toStr((d.data() as Record<string, unknown>).createdAt),
+  } as unknown as T));
+  return docs.sort((a, b) =>
+    new Date((b as Record<string, string>).createdAt).getTime() -
+    new Date((a as Record<string, string>).createdAt).getTime()
+  );
+}
+
 // ─── Exported Store ──────────────────────────────────────
 export const firestoreStore = {
   inquiries: {
     getAll: () => getAll<Inquiry>('inquiries'),
+    getByUser: (userId: string) => getByUser<Inquiry>('inquiries', userId),
     add: (data: Omit<Inquiry, 'id' | 'createdAt'>) => add<Inquiry>('inquiries', { ...data, createdAt: new Date().toISOString() }),
     update: (id: string, data: Partial<Inquiry>) => update<Inquiry>('inquiries', id, data),
     delete: (id: string) => remove('inquiries', id),
