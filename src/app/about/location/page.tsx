@@ -17,12 +17,13 @@ export default function LocationPage() {
         {/* 지도 */}
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
           <iframe
-            src="https://map.kakao.com/link/embed/search/부산광역시 북구 덕천로 155"
+            src="https://maps.google.com/maps?q=%EB%B6%80%EC%82%B0%EA%B4%91%EC%97%AD%EC%8B%9C+%EB%B6%81%EA%B5%AC+%EB%8D%95%EC%B2%9C%EB%A1%9C+155&t=&z=17&ie=UTF8&iwloc=&output=embed"
             width="100%"
             height="360"
             style={{ border: 0 }}
             allowFullScreen
             loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
             title="올윈비시지 위치"
           />
         </div>

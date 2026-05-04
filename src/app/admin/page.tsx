@@ -18,7 +18,7 @@ export default function AdminLoginPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = (e: { preventDefault(): void }) => {
     e.preventDefault();
     if (pw === ADMIN_PW) {
       sessionStorage.setItem('admin_auth', 'true');
@@ -72,7 +72,7 @@ export default function AdminLoginPage() {
           <div className="w-16 h-16 rounded-2xl bg-white/20 flex items-center justify-center mx-auto mb-4">
             <Shield size={32} className="text-white" />
           </div>
-          <h1 className="text-2xl font-bold text-white">(주)올윈비시지</h1>
+          <h1 className="text-2xl font-bold" style={{ color: '#FFD700' }}>(주)올윈비시지</h1>
           <p className="text-blue-200 text-sm mt-1">관리자 페이지</p>
         </div>
 
