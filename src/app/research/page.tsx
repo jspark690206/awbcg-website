@@ -1,17 +1,21 @@
-export default function SupportPage() {
+export default function ResearchPage() {
   return (
     <div>
-      {/* 교육장 안내 정보 */}
+      {/* 연구소 소개 */}
       <section className="mb-8">
+        <p className="text-sm text-gray-600 leading-relaxed mb-4">
+          (주)올윈비시지 기술연구소는 스마트공장 · 빅데이터 · 인공지능 분야의 핵심 기술을 연구개발하며,
+          영남지역 제조기업의 경쟁력 강화를 위한 솔루션을 제공합니다.
+        </p>
         <table className="w-full text-sm border-t-2 mb-6" style={{ borderColor: 'var(--color-primary)' }}>
           <tbody>
             {[
-              { label: '교육장명', value: '(주)올윈비시지 교육장' },
-              { label: '위치', value: '부산광역시 북구 덕천로 155 1F' },
+              { label: '연구소명', value: '(주)올윈비시지 기술연구소' },
+              { label: '소재지', value: '부산광역시 북구 덕천로 155 1F' },
               { label: '전화', value: '051-343-4047' },
+              { label: '팩스', value: '051-343-4048' },
               { label: '이메일', value: 'admin@awbcg.co.kr' },
-              { label: '교육과정', value: 'MES 운용 교육 / 빅데이터 분석 교육 / AI 기초·심화 교육' },
-              { label: '교육문의', value: '사전 예약 후 방문 (온라인 문의 또는 전화 접수)' },
+              { label: '주요 연구분야', value: 'MES · 빅데이터(BigData) · 인공지능(AI) · 디지털트윈(Digital Twin)' },
             ].map((row) => (
               <tr key={row.label} className="border-b border-gray-200">
                 <th className="px-4 py-3 text-left font-semibold w-36 whitespace-nowrap"

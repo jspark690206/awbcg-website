@@ -25,9 +25,9 @@ export default function VisionPage() {
           style={{ background: 'linear-gradient(135deg, #0D2B5E 0%, #1A7FC4 100%)' }}
         >
           <p className="text-blue-200 text-sm mb-4 uppercase tracking-widest">Our Vision</p>
-          <h2 className="text-2xl md:text-3xl font-bold text-white leading-relaxed">
-            "제조기업에 인공지능(AI)을 불어넣어<br />
-            <span style={{ color: '#4ECCA3' }}>다크 팩토리 구축</span>에 기여하자"
+          <h2 className="text-2xl md:text-3xl font-bold leading-relaxed">
+            <span style={{ color: '#FFD700' }}>"제조기업에 인공지능(AI)을 불어넣어</span><br />
+            <span style={{ color: '#4ECCA3' }}>다크 팩토리 구축</span><span style={{ color: '#FFD700' }}>에 기여하자"</span>
           </h2>
           <p className="text-blue-200 mt-4 text-sm">
             Dark Factory — 사람의 개입 없이 자율 운영되는 스마트 제조환경

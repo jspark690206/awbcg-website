@@ -1,4 +1,5 @@
 import { Quote } from 'lucide-react';
+import Image from 'next/image';
 
 const messages = [
   {
@@ -34,12 +35,18 @@ export default function CeoPage() {
         className="rounded-2xl p-8 mb-10 flex flex-col sm:flex-row items-center sm:items-start gap-6"
         style={{ background: 'linear-gradient(135deg, #0D2B5E 0%, #1A4A8A 100%)' }}
       >
-        <div className="w-24 h-24 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0">
-          <span className="text-white text-3xl font-bold">박</span>
+        <div className="w-28 h-28 rounded-full overflow-hidden flex-shrink-0 border-2 border-white/30">
+          <Image
+            src="/ceo.jpg"
+            alt="대표이사 박제선"
+            width={112}
+            height={112}
+            className="w-full h-full object-cover object-top"
+          />
         </div>
         <div className="text-center sm:text-left">
           <p className="text-blue-200 text-sm mb-1">대표이사</p>
-          <h3 className="text-white text-2xl font-bold mb-1">박 제 선</h3>
+          <h3 className="text-2xl font-bold mb-1" style={{ color: '#ffffff' }}>박 제 선</h3>
           <p className="text-blue-300 text-sm">(주)올윈비시지 · AWBCG</p>
           <div
             className="inline-block mt-3 px-3 py-1 rounded-full text-xs font-medium"

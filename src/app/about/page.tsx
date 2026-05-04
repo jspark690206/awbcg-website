@@ -1,9 +1,7 @@
-import { Building2, Calendar } from 'lucide-react';
-
 const companyInfo = [
   { label: '법인명', value: '(주)올윈비시지' },
   { label: '영문명', value: 'AWBCG (All Winner Brilliant Consulting Group)' },
-  { label: '설립', value: '2019년 4월' },
+  { label: '설립', value: '2019년 1월' },
   { label: '대표이사', value: '박제선' },
   { label: '주소', value: '부산광역시 북구 덕천로 155 1F' },
   { label: '전화', value: '051-343-4047' },
@@ -44,8 +42,8 @@ const timeline = [
     year: '2019',
     items: [
       { month: '08', content: '스마트공장 구축 및 고도화 수주 — ㈜에이치씨글로벌 / ㈜희창유업 (MES, 스마트HACCP, Digital Twin)' },
+      { month: '07', content: '시범공장 구축 수주 — ㈜코렌스 (BMW·PASTE·로 라인 3D 모델기반 모니터링)' },
       { month: '04', content: '법인 설립 — (주)올윈비시지 창립' },
-      { month: '03', content: '시범공장 구축 수주 — ㈜코렌스 (BMW·PASTE·로 라인 3D 모델기반 모니터링)' },
     ],
   },
   {
@@ -58,85 +56,55 @@ const timeline = [
 
 export default function AboutPage() {
   return (
-    <div className="space-y-12">
-      {/* 기업 개요 */}
-      <section>
-        <div className="flex items-center gap-3 mb-6">
-          <div
-            className="w-10 h-10 rounded-xl flex items-center justify-center"
-            style={{ backgroundColor: 'rgba(13,43,94,0.08)' }}
-          >
-            <Building2 size={20} style={{ color: 'var(--color-primary)' }} />
-          </div>
-          <h2 className="text-2xl font-bold" style={{ color: 'var(--color-primary)' }}>기업현황</h2>
-        </div>
-
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-          <table className="w-full text-sm">
-            <tbody>
-              {companyInfo.map((item, idx) => (
-                <tr key={item.label} className={`border-b border-gray-100 last:border-0 ${idx % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'}`}>
-                  <th
-                    className="px-6 py-4 text-left font-semibold w-40 whitespace-nowrap"
-                    style={{ color: 'var(--color-primary)', backgroundColor: idx % 2 === 0 ? 'rgba(13,43,94,0.03)' : 'rgba(13,43,94,0.05)' }}
-                  >
-                    {item.label}
-                  </th>
-                  <td className="px-6 py-4 text-gray-700">{item.value}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+    <div>
+      {/* 기업 개요 표 */}
+      <section className="mb-10">
+        <table className="w-full text-sm border-t-2" style={{ borderColor: 'var(--color-primary)' }}>
+          <tbody>
+            {companyInfo.map((item) => (
+              <tr key={item.label} className="border-b border-gray-200">
+                <th
+                  className="px-4 py-3 text-left font-semibold w-36 whitespace-nowrap"
+                  style={{ backgroundColor: '#f0f4ff', color: 'var(--color-primary)' }}
+                >
+                  {item.label}
+                </th>
+                <td className="px-4 py-3 text-gray-700">{item.value}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </section>
 
-      {/* 연혁 타임라인 */}
+      {/* 회사 연혁 */}
       <section>
-        <div className="flex items-center gap-3 mb-6">
-          <div
-            className="w-10 h-10 rounded-xl flex items-center justify-center"
-            style={{ backgroundColor: 'rgba(13,43,94,0.08)' }}
-          >
-            <Calendar size={20} style={{ color: 'var(--color-primary)' }} />
-          </div>
-          <h2 className="text-2xl font-bold" style={{ color: 'var(--color-primary)' }}>회사 연혁</h2>
-        </div>
-
-        <div className="space-y-6">
-          {timeline.map((group) => (
-            <div key={group.year} className="flex gap-6">
-              {/* 연도 */}
-              <div className="flex-shrink-0 w-16 text-right">
-                <span className="text-2xl font-bold" style={{ color: 'var(--color-primary)' }}>
-                  {group.year}
-                </span>
-              </div>
-
-              {/* 라인 + 내용 */}
-              <div className="flex gap-4 flex-1">
-                <div className="flex flex-col items-center">
-                  <div className="w-3 h-3 rounded-full mt-2 flex-shrink-0" style={{ backgroundColor: 'var(--color-secondary)' }} />
-                  <div className="w-0.5 flex-1 mt-2" style={{ backgroundColor: 'var(--color-secondary)', opacity: 0.2 }} />
-                </div>
-                <div className="flex-1 pb-2">
-                  {group.items.map((item, idx) => (
-                    <div key={idx} className="bg-white rounded-xl border border-gray-100 shadow-sm p-4 mb-3 last:mb-0">
-                      <div className="flex items-start gap-3">
-                        <span
-                          className="text-xs font-bold px-2 py-0.5 rounded flex-shrink-0 mt-0.5"
-                          style={{ backgroundColor: 'rgba(26,127,196,0.1)', color: 'var(--color-secondary)' }}
-                        >
-                          {item.month}월
-                        </span>
-                        <p className="text-sm text-gray-700 leading-relaxed">{item.content}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
+        <h3 className="text-base font-bold mb-4 pb-2 border-b-2" style={{ color: 'var(--color-primary)', borderColor: 'var(--color-primary)' }}>
+          회사 연혁
+        </h3>
+        <table className="w-full text-sm">
+          <tbody>
+            {timeline.map((group) =>
+              group.items.map((item, i) => (
+                <tr key={`${group.year}-${i}`} className="border-b border-gray-100">
+                  {i === 0 && (
+                    <td
+                      rowSpan={group.items.length}
+                      className="w-16 px-4 py-3 font-bold text-center align-top"
+                      style={{ color: 'var(--color-primary)', backgroundColor: '#f0f4ff', borderRight: '1px solid #ddd' }}
+                    >
+                      {group.year}
+                    </td>
+                  )}
+                  <td className="px-4 py-2 w-14 font-medium text-center" style={{ color: 'var(--color-secondary)' }}>
+                    {item.month}월
+                  </td>
+                  <td className="px-2 py-2 text-gray-400 w-4">:</td>
+                  <td className="px-2 py-2 text-gray-700">{item.content}</td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
       </section>
     </div>
   );

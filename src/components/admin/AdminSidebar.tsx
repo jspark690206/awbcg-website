@@ -36,10 +36,9 @@ export default function AdminSidebar() {
           const isActive = pathname === href;
           return (
             <Link key={href} href={href}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
-                isActive ? 'bg-white/15 text-white' : 'text-blue-200 hover:bg-white/10 hover:text-white'
-              }`}>
-              <Icon size={16} />
+              style={{ color: '#ffffff', backgroundColor: isActive ? 'rgba(255,255,255,0.2)' : 'transparent' }}
+              className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all hover:bg-white/10">
+              <Icon size={16} style={{ color: '#ffffff' }} />
               {label}
             </Link>
           );
@@ -49,8 +48,9 @@ export default function AdminSidebar() {
       {/* 로그아웃 */}
       <div className="px-3 pb-6">
         <button onClick={logout}
-          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-blue-300 hover:bg-white/10 hover:text-white transition-all">
-          <LogOut size={16} />
+          style={{ color: '#ffffff' }}
+          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium hover:bg-white/10 transition-all">
+          <LogOut size={16} style={{ color: '#ffffff' }} />
           로그아웃
         </button>
       </div>

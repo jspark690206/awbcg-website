@@ -44,7 +44,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="ko" className={`h-full ${notoSansKR.variable} ${inter.variable}`}>
       <body className="min-h-full flex flex-col antialiased">
         <Header />
-        <main className="flex-1 pt-[88px]">
+        <main className="flex-1 pt-[82px]">
           {children}
         </main>
         <Footer />

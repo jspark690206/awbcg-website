@@ -1,88 +1,79 @@
+'use client';
+
 import Link from 'next/link';
 import Image from 'next/image';
-import { Phone, Printer, Mail, MapPin } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 export default function Footer() {
+  const [todayCount, setTodayCount] = useState('000000');
+
+  useEffect(() => {
+    const today = new Date().toDateString();
+    const stored = localStorage.getItem('visit_date');
+    const count = parseInt(localStorage.getItem('visit_count') ?? '0', 10);
+
+    if (stored === today) {
+      const newCount = count + 1;
+      localStorage.setItem('visit_count', String(newCount));
+      setTodayCount(String(newCount).padStart(6, '0'));
+    } else {
+      localStorage.setItem('visit_date', today);
+      localStorage.setItem('visit_count', '1');
+      setTodayCount('000001');
+    }
+  }, []);
+
   return (
-    <footer style={{ backgroundColor: 'var(--color-primary)' }} className="text-white">
-      <div className="container py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+    <footer style={{ backgroundColor: '#f0ede8', borderTop: '2px solid #cccccc' }}>
+      <div className="container py-2">
+        <div className="flex items-center gap-4">
+
+          {/* 로고 */}
+          <div
+            className="flex-shrink-0 flex items-center justify-center"
+            style={{ width: '140px', height: '90px', backgroundColor: '#f0ede8', padding: '4px' }}
+          >
+            <Image
+              src="/logo.gif"
+              alt="올윈비시지 로고"
+              width={136}
+              height={82}
+              style={{ objectFit: 'contain', backgroundColor: '#f0ede8' }}
+              unoptimized
+            />
+          </div>
+
           {/* 회사 정보 */}
-          <div className="md:col-span-2">
-            <div className="flex items-center gap-3 mb-4">
-              <Image
-                src="/logo.gif"
-                alt="올윈비시지 로고"
-                width={70}
-                height={35}
-                className="object-contain brightness-0 invert"
-                unoptimized
-              />
-              <span className="font-bold text-lg">(주)올윈비시지</span>
+          <div className="flex-1 text-xs" style={{ color: '#333' }}>
+            <div className="flex items-center gap-2 mb-1 font-semibold" style={{ color: '#222' }}>
+              <Link href="/about" className="hover:underline">회사소개</Link>
+              <span className="text-gray-400">/</span>
+              <Link href="/privacy" className="hover:underline">개인정보보호정책</Link>
+              <span className="text-gray-400">/</span>
+              <Link href="/about/location" className="hover:underline">찾아오시는길</Link>
             </div>
-            <p className="text-blue-200 text-sm mb-4 leading-relaxed">
-              스마트공장 / 빅데이터 / 인공지능 구축 전문 컨설팅 그룹<br />
-              영남 제조기업의 다크 팩토리 실현을 위해 함께합니다.
+            <p className="mb-0.5">
+              법인명 : (주)올윈비시지 &nbsp;/&nbsp; 주소 : 부산광역시 북구 덕천로 155 1F
             </p>
-            <div className="space-y-2 text-sm text-blue-100">
-              <div className="flex items-start gap-2">
-                <MapPin size={14} className="mt-0.5 shrink-0 text-blue-300" />
-                <span>부산광역시 북구 덕천로 155 1F</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Phone size={14} className="shrink-0 text-blue-300" />
-                <a href="tel:051-343-4047" className="hover:text-white transition-colors">051-343-4047</a>
-              </div>
-              <div className="flex items-center gap-2">
-                <Printer size={14} className="shrink-0 text-blue-300" />
-                <span>051-343-4048</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Mail size={14} className="shrink-0 text-blue-300" />
-                <a href="mailto:admin@awbcg.co.kr" className="hover:text-white transition-colors">admin@awbcg.co.kr</a>
-              </div>
-            </div>
+            <p className="mb-0.5">
+              Tel :{' '}
+              <a href="tel:051-343-4047" className="underline" style={{ color: '#cc3300' }}>051-343-4047</a>
+              {' '}/ Fax : 051-343-4048 &nbsp;/ E_mail :{' '}
+              <a href="mailto:admin@awbcg.co.kr" className="underline" style={{ color: '#cc3300' }}>admin@awbcg.co.kr</a>
+              {' '}/ 사업자등록번호: 654-81-01275
+            </p>
+            <p className="mb-0.5">Copyright© 2019 allwinbcg All right reserved.</p>
+            <p style={{ color: '#555' }}>
+              본 사이트내 이메일 무단수집을 거부하며, 위반시 정보통신망법에 의해 형사처벌 될 수 있습니다.
+            </p>
           </div>
 
-          {/* 서비스 */}
-          <div>
-            <h4 className="font-semibold mb-3 text-sm text-blue-200 uppercase tracking-wider">서비스</h4>
-            <ul className="space-y-2 text-sm text-blue-100">
-              {['MES 컨설팅', 'BigData 컨설팅', 'AI 컨설팅', '창업 컨설팅', '경영 컨설팅'].map((s) => (
-                <li key={s}>
-                  <Link href="/services" className="hover:text-white transition-colors">{s}</Link>
-                </li>
-              ))}
-            </ul>
+          {/* Today 방문자 */}
+          <div className="flex-shrink-0 text-right text-xs" style={{ color: '#555' }}>
+            <span>Today : </span>
+            <span className="font-mono font-bold" style={{ color: '#333' }}>[{todayCount}]</span>
           </div>
 
-          {/* 고객지원 */}
-          <div>
-            <h4 className="font-semibold mb-3 text-sm text-blue-200 uppercase tracking-wider">고객지원</h4>
-            <ul className="space-y-2 text-sm text-blue-100">
-              {['온라인 문의', '제품사용설명서', 'Q&A', 'HELPDESK', '원격지원'].map((s) => (
-                <li key={s}>
-                  <Link href="/support" className="hover:text-white transition-colors">{s}</Link>
-                </li>
-              ))}
-            </ul>
-            <div className="mt-4 pt-4 border-t border-white/10">
-              <p className="text-xs text-blue-300">사업자등록번호</p>
-              <p className="text-sm text-blue-100">654-81-01275</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* 하단 바 */}
-      <div className="border-t border-white/10">
-        <div className="container py-4 flex flex-col md:flex-row justify-between items-center gap-2 text-xs text-blue-300">
-          <span>Copyright © 2019 AllWin BCG All rights reserved.</span>
-          <div className="flex gap-4">
-            <Link href="/about" className="hover:text-white transition-colors">회사소개</Link>
-            <Link href="/privacy" className="hover:text-white transition-colors">개인정보보호정책</Link>
-            <Link href="/about/location" className="hover:text-white transition-colors">찾아오시는길</Link>
-          </div>
         </div>
       </div>
     </footer>

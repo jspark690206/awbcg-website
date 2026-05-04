@@ -5,24 +5,18 @@ import { usePathname } from 'next/navigation';
 import { ChevronRight } from 'lucide-react';
 
 const sidebarItems = [
-  { label: '기업현황', href: '/about' },
-  { label: 'CEO 인사말', href: '/about/ceo' },
-  { label: '경영비전', href: '/about/vision' },
-  { label: '조직도', href: '/about/organization' },
-  { label: '사업장안내', href: '/about/location' },
+  { label: '관련뉴스', href: '/news' },
+  { label: '고객사이트', href: '/news/clients' },
 ];
 
 const pageTitles: Record<string, string> = {
-  '/about': '기업현황',
-  '/about/ceo': 'CEO 인사말',
-  '/about/vision': '경영비전',
-  '/about/organization': '조직도',
-  '/about/location': '사업장안내',
+  '/news': '관련뉴스',
+  '/news/clients': '고객사이트',
 };
 
-export default function AboutLayout({ children }: { children: React.ReactNode }) {
+export default function NewsLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const currentTitle = pageTitles[pathname] ?? '회사현황';
+  const currentTitle = pageTitles[pathname] ?? '회사소식';
 
   return (
     <div style={{ backgroundColor: '#f5eaf2' }} className="min-h-screen py-8">
@@ -31,14 +25,11 @@ export default function AboutLayout({ children }: { children: React.ReactNode })
 
           {/* 좌측 사이드바 */}
           <aside className="w-48 flex-shrink-0">
-            {/* 섹션 타이틀 */}
             <div className="text-center mb-3 py-3">
-              <p className="font-black text-2xl leading-tight" style={{ color: '#1a4a8a' }}>ABOUT</p>
-              <p className="font-black text-2xl leading-tight" style={{ color: '#1a4a8a' }}>COMPANY</p>
-              <p className="text-sm font-medium mt-1" style={{ color: '#555' }}>회사현황</p>
+              <p className="font-black text-2xl leading-tight" style={{ color: '#1a4a8a' }}>NEWS</p>
+              <p className="text-sm font-medium mt-1" style={{ color: '#555' }}>회사소식</p>
             </div>
 
-            {/* 사이드 메뉴 */}
             <nav className="border border-gray-300 overflow-hidden">
               {sidebarItems.map((item) => {
                 const isActive = pathname === item.href;
@@ -61,7 +52,6 @@ export default function AboutLayout({ children }: { children: React.ReactNode })
 
           {/* 우측 콘텐츠 */}
           <main className="flex-1 min-w-0 bg-white border border-gray-200 p-8">
-            {/* 콘텐츠 상단 제목 + 브레드크럼 */}
             <div className="flex items-center justify-between mb-6 pb-3 border-b border-gray-200">
               <h2 className="text-xl font-bold" style={{ color: 'var(--color-primary)' }}>
                 {currentTitle}
@@ -69,8 +59,8 @@ export default function AboutLayout({ children }: { children: React.ReactNode })
               <nav className="flex items-center gap-1 text-xs text-gray-400">
                 <Link href="/" className="hover:text-blue-600">HOME</Link>
                 <ChevronRight size={10} />
-                <Link href="/about" className="hover:text-blue-600">회사현황</Link>
-                {pathname !== '/about' && (
+                <Link href="/news" className="hover:text-blue-600">회사소식</Link>
+                {pathname !== '/news' && (
                   <>
                     <ChevronRight size={10} />
                     <span style={{ color: 'var(--color-primary)' }}>{currentTitle}</span>
@@ -78,9 +68,9 @@ export default function AboutLayout({ children }: { children: React.ReactNode })
                 )}
               </nav>
             </div>
-
             {children}
           </main>
+
         </div>
       </div>
     </div>

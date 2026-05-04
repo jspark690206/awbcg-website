@@ -1,18 +1,89 @@
-import PageBanner from '@/components/ui/PageBanner';
-import SupportNav from '@/components/support/SupportNav';
+'use client';
+
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { ChevronRight } from 'lucide-react';
+
+const sidebarItems = [
+  { label: '교육장안내', href: '/support' },
+  { label: '온라인 고객지원', href: '/support/contact' },
+  { label: '제품사용설명서', href: '/support/manual' },
+  { label: '고객의소리', href: '/support/voice' },
+  { label: '원격지원', href: '/support/remote' },
+  { label: 'Q&A', href: '/support/qa' },
+  { label: 'HELPDESK', href: '/support/helpdesk' },
+];
+
+const pageTitles: Record<string, string> = {
+  '/support': '교육장안내',
+  '/support/contact': '온라인 고객지원',
+  '/support/manual': '제품사용설명서',
+  '/support/voice': '고객의소리',
+  '/support/remote': '원격지원',
+  '/support/qa': 'Q&A',
+  '/support/helpdesk': 'HELPDESK',
+};
 
 export default function SupportLayout({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
+  const currentTitle = pageTitles[pathname] ?? '고객지원';
+
   return (
-    <>
-      <PageBanner
-        title="고객지원"
-        subtitle="CUSTOMER SUPPORT"
-        breadcrumb={[{ label: 'HOME', href: '/' }, { label: '고객지원' }]}
-      />
-      <SupportNav />
-      <div className="py-16" style={{ backgroundColor: 'var(--color-bg)' }}>
-        <div className="container max-w-4xl">{children}</div>
+    <div style={{ backgroundColor: '#f5eaf2' }} className="min-h-screen py-8">
+      <div className="container">
+        <div className="flex gap-6 items-start">
+
+          {/* 좌측 사이드바 */}
+          <aside className="w-48 flex-shrink-0">
+            <div className="text-center mb-3 py-3">
+              <p className="font-black text-xl leading-tight" style={{ color: '#1a4a8a' }}>CUSTOMER</p>
+              <p className="font-black text-xl leading-tight" style={{ color: '#1a4a8a' }}>SUPPORT</p>
+              <p className="text-sm font-medium mt-1" style={{ color: '#555' }}>고객지원</p>
+            </div>
+
+            <nav className="border border-gray-300 overflow-hidden">
+              {sidebarItems.map((item) => {
+                const isActive = pathname === item.href;
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    style={isActive
+                      ? { backgroundColor: '#cc1111', color: '#fff' }
+                      : { backgroundColor: '#fff', color: '#333' }}
+                    className="flex items-center justify-between px-4 py-3 text-sm border-b border-gray-200 last:border-0 hover:opacity-90 transition-opacity"
+                  >
+                    <span className={isActive ? 'font-bold' : ''}>{item.label}</span>
+                    {isActive && <ChevronRight size={14} />}
+                  </Link>
+                );
+              })}
+            </nav>
+          </aside>
+
+          {/* 우측 콘텐츠 */}
+          <main className="flex-1 min-w-0 bg-white border border-gray-200 p-8">
+            <div className="flex items-center justify-between mb-6 pb-3 border-b border-gray-200">
+              <h2 className="text-xl font-bold" style={{ color: 'var(--color-primary)' }}>
+                {currentTitle}
+              </h2>
+              <nav className="flex items-center gap-1 text-xs text-gray-400">
+                <Link href="/" className="hover:text-blue-600">HOME</Link>
+                <ChevronRight size={10} />
+                <Link href="/support" className="hover:text-blue-600">고객지원</Link>
+                {pathname !== '/support' && (
+                  <>
+                    <ChevronRight size={10} />
+                    <span style={{ color: 'var(--color-primary)' }}>{currentTitle}</span>
+                  </>
+                )}
+              </nav>
+            </div>
+            {children}
+          </main>
+
+        </div>
       </div>
-    </>
+    </div>
   );
 }

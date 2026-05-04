@@ -1,23 +1,55 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Menu, X, Phone, Mail } from 'lucide-react';
 
 const navItems = [
-  { label: '회사현황', href: '/about', sub: ['기업현황', 'CEO 인사말', '경영비전', '조직도', '사업장안내'] },
-  { label: '서비스소개', href: '/services', sub: ['MES 컨설팅', 'BigData 컨설팅', 'AI 컨설팅', '창업 컨설팅', '경영 컨설팅'] },
-  { label: '기술연구소', href: '/research', sub: ['연구소안내', '보유기술'] },
-  { label: '채용정보', href: '/careers', sub: ['인재상', '자격요건', '채용공지'] },
-  { label: '고객지원', href: '/support', sub: ['교육장안내', '온라인고객지원', '제품사용설명서', 'Q&A', 'HELPDESK'] },
-  { label: '회사소식', href: '/news', sub: ['관련뉴스', '고객사이트'] },
+  { label: '회사현황', href: '/about', sub: [
+    { label: '기업현황', href: '/about' },
+    { label: 'CEO 인사말', href: '/about/ceo' },
+    { label: '경영비전', href: '/about/vision' },
+    { label: '조직도', href: '/about/organization' },
+    { label: '사업장안내', href: '/about/location' },
+  ]},
+  { label: '서비스소개', href: '/services', sub: [
+    { label: 'MES 컨설팅', href: '/services/mes' },
+    { label: 'BigData 컨설팅', href: '/services/bigdata' },
+    { label: 'AI 컨설팅', href: '/services/ai' },
+    { label: '창업 컨설팅', href: '/services/startup' },
+    { label: '경영 컨설팅', href: '/services/management' },
+  ]},
+  { label: '기술연구소', href: '/research', sub: [
+    { label: '연구소안내', href: '/research' },
+    { label: '보유기술', href: '/research/tech' },
+  ]},
+  { label: '채용정보', href: '/careers', sub: [
+    { label: '인재상', href: '/careers' },
+    { label: '자격요건', href: '/careers/qualifications' },
+    { label: '채용공지', href: '/careers/notice' },
+  ]},
+  { label: '고객지원', href: '/support', sub: [
+    { label: '교육장안내', href: '/support' },
+    { label: '온라인 고객지원', href: '/support/contact' },
+    { label: '제품사용설명서', href: '/support/manual' },
+    { label: '고객의소리', href: '/support/voice' },
+    { label: '원격지원', href: '/support/remote' },
+    { label: 'Q&A', href: '/support/qa' },
+    { label: 'HELPDESK', href: '/support/helpdesk' },
+  ]},
+  { label: '회사소식', href: '/news', sub: [
+    { label: '관련뉴스', href: '/news' },
+    { label: '고객사이트', href: '/news/clients' },
+  ]},
 ];
 
 export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
+  const pathname = usePathname();
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 10);
@@ -44,7 +76,7 @@ export default function Header() {
             </a>
             <span className="text-white/40">|</span>
             <Link href="/sitemap" className="hover:text-blue-200 transition-colors">SITEMAP</Link>
-            <Link href="/intranet" className="hover:text-blue-200 transition-colors">INTRANET</Link>
+            <Link href="/admin" className="hover:text-blue-200 transition-colors">ADMIN</Link>
             <Link href="/en" className="hover:text-blue-200 transition-colors">ENGLISH</Link>
           </div>
         </div>
@@ -62,11 +94,8 @@ export default function Header() {
             className="object-contain"
             unoptimized
           />
-          <div>
-            <div style={{ color: 'var(--color-primary)' }} className="font-bold text-lg leading-tight">
-              (주)올윈비시지
-            </div>
-            <div className="text-gray-400 text-xs leading-none">AWBCG</div>
+          <div style={{ color: 'var(--color-primary)', fontSize: '40px', lineHeight: '40px' }} className="font-bold">
+            (주)올윈비시지
           </div>
         </Link>
 
@@ -81,19 +110,25 @@ export default function Header() {
             >
               <Link
                 href={item.href}
-                className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-blue-700 transition-colors rounded-md hover:bg-blue-50"
+                className="relative px-4 py-2 text-sm font-medium transition-colors block"
+                style={{
+                  color: pathname.startsWith(item.href) ? 'var(--color-secondary)' : '#374151',
+                  borderTop: pathname.startsWith(item.href) || activeMenu === item.href
+                    ? '3px solid var(--color-secondary)'
+                    : '3px solid transparent',
+                }}
               >
                 {item.label}
               </Link>
               {activeMenu === item.href && (
-                <div className="absolute top-full left-0 mt-1 w-40 bg-white rounded-lg shadow-lg border border-gray-100 py-1 z-50">
+                <div className="absolute top-full left-0 mt-1 w-44 bg-white rounded-lg shadow-lg border border-gray-100 py-1 z-50">
                   {item.sub.map((s) => (
                     <Link
-                      key={s}
-                      href={`${item.href}/${s.replace(/\s/g, '-').toLowerCase()}`}
+                      key={s.label}
+                      href={s.href}
                       className="block px-4 py-2 text-sm text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-colors"
                     >
-                      {s}
+                      {s.label}
                     </Link>
                   ))}
                 </div>

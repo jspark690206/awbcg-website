@@ -8,7 +8,7 @@ export default function ContactBanner() {
       style={{ background: 'linear-gradient(135deg, #0D2B5E 0%, #1A7FC4 100%)' }}
     >
       <div className="container text-center">
-        <h2 className="text-2xl md:text-3xl font-bold text-white mb-3">
+        <h2 className="text-2xl md:text-3xl font-bold mb-3" style={{ color: '#FFD700' }}>
           스마트팩토리 구축, 지금 바로 상담받으세요
         </h2>
         <p className="text-blue-200 mb-8">
