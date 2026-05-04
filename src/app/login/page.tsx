@@ -25,8 +25,19 @@ function LoginContent() {
       await signIn();
     } catch (err: unknown) {
       const code = (err as { code?: string }).code ?? '';
-      if (!code.includes('popup-closed') && !code.includes('popup-cancelled') && !code.includes('cancelled-popup-request')) {
-        setError('로그인에 실패했습니다. 다시 시도해 주세요.');
+      const msg = (err as { message?: string }).message ?? '';
+      if (code.includes('popup-closed') || code.includes('popup-cancelled') || code.includes('cancelled-popup-request')) {
+        // 사용자가 팝업 닫음 — 에러 없음
+      } else if (code.includes('popup-blocked')) {
+        setError('팝업이 차단되었습니다. 브라우저에서 팝업을 허용한 후 다시 시도해 주세요.');
+      } else if (code.includes('unauthorized-domain')) {
+        setError('이 도메인이 Firebase에 등록되지 않았습니다. Firebase 콘솔 → Authentication → Settings → 승인된 도메인에 현재 주소를 추가해 주세요.');
+      } else if (code.includes('operation-not-allowed')) {
+        setError('Google 로그인이 비활성화되어 있습니다. Firebase 콘솔에서 활성화해 주세요.');
+      } else if (code.includes('invalid-api-key') || msg.includes('invalid-api-key')) {
+        setError('Firebase 환경변수가 설정되지 않았습니다. Vercel 대시보드에서 환경변수를 확인해 주세요.');
+      } else {
+        setError(`로그인 오류 (${code || msg || '알 수 없는 오류'})`);
       }
     } finally {
       setSigningIn(false);
