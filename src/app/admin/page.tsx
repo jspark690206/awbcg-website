@@ -2,10 +2,10 @@
 
 export const dynamic = 'force-dynamic';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Lock, Eye, EyeOff, Shield } from 'lucide-react';
-import { signInWithPopup } from 'firebase/auth';
+import { Lock, Eye, EyeOff, Shield, Loader2 } from 'lucide-react';
+import { signInWithRedirect, getRedirectResult } from 'firebase/auth';
 import { auth, googleProvider } from '@/lib/firebase';
 
 const ADMIN_PW = process.env.NEXT_PUBLIC_ADMIN_PASSWORD ?? 'awbcg2019!';
@@ -17,6 +17,34 @@ export default function AdminLoginPage() {
   const [show, setShow] = useState(false);
   const [error, setError] = useState('');
   const [googleLoading, setGoogleLoading] = useState(false);
+  const [checkingRedirect, setCheckingRedirect] = useState(true);
+
+  // 구글 리다이렉트 후 결과 처리
+  useEffect(() => {
+    getRedirectResult(auth)
+      .then((result) => {
+        if (result?.user) {
+          const email = result.user.email ?? '';
+          if (ALLOWED_EMAILS.includes(email)) {
+            sessionStorage.setItem('admin_auth', 'true');
+            sessionStorage.setItem('admin_email', email);
+            router.push('/admin/dashboard');
+          } else {
+            setError(`접근 권한이 없습니다. (${email})`);
+            auth.signOut();
+          }
+        }
+      })
+      .catch((err) => {
+        const code = (err as { code?: string }).code ?? '';
+        if (code && !code.includes('cancelled')) {
+          setError(`Google 로그인 오류: ${code}`);
+        }
+      })
+      .finally(() => {
+        setCheckingRedirect(false);
+      });
+  }, [router]);
 
   const handleLogin = (e: { preventDefault(): void }) => {
     e.preventDefault();
@@ -33,31 +61,24 @@ export default function AdminLoginPage() {
     setGoogleLoading(true);
     setError('');
     try {
-      const result = await signInWithPopup(auth, googleProvider);
-      const email = result.user.email ?? '';
-      if (ALLOWED_EMAILS.includes(email)) {
-        sessionStorage.setItem('admin_auth', 'true');
-        sessionStorage.setItem('admin_email', email);
-        router.push('/admin/dashboard');
-      } else {
-        setError(`접근 권한이 없습니다. (${email})`);
-        await auth.signOut();
-      }
+      await signInWithRedirect(auth, googleProvider);
     } catch (err: unknown) {
-      const code = (err as { code?: string }).code ?? '';
-      if (code.includes('popup-closed') || code.includes('popup-cancelled') || code.includes('cancelled-popup-request')) {
-        // 사용자가 팝업 닫음 — 에러 없음
-      } else if (code.includes('popup-blocked')) {
-        setError('팝업이 차단되었습니다. 브라우저 팝업을 허용해 주세요.');
-      } else if (code.includes('unauthorized-domain')) {
-        setError('Firebase 콘솔에서 현재 도메인을 승인된 도메인에 추가해 주세요.');
-      } else {
-        setError(`Google 로그인 실패: ${code || '알 수 없는 오류'}`);
-      }
-    } finally {
+      setError(`오류: ${(err as { message?: string }).message ?? '알 수 없는 오류'}`);
       setGoogleLoading(false);
     }
   };
+
+  // 리다이렉트 결과 확인 중
+  if (checkingRedirect) {
+    return (
+      <div className="min-h-screen flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #0D2B5E 0%, #1A4A8A 100%)' }}>
+        <div className="text-center text-white">
+          <Loader2 size={36} className="animate-spin mx-auto mb-3 opacity-70" />
+          <p className="text-blue-200 text-sm">로그인 확인 중...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #0D2B5E 0%, #1A4A8A 100%)' }}>
@@ -81,7 +102,7 @@ export default function AdminLoginPage() {
             className="w-full flex items-center justify-center gap-3 py-3 rounded-xl border-2 border-gray-200 text-sm font-semibold text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition-all disabled:opacity-60"
           >
             {googleLoading ? (
-              <span className="w-5 h-5 border-2 border-gray-400 border-t-transparent rounded-full animate-spin" />
+              <Loader2 size={18} className="animate-spin text-gray-400" />
             ) : (
               <svg width="20" height="20" viewBox="0 0 48 48">
                 <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
@@ -90,7 +111,7 @@ export default function AdminLoginPage() {
                 <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
               </svg>
             )}
-            {googleLoading ? '로그인 중...' : 'Google 계정으로 로그인'}
+            {googleLoading ? 'Google로 이동 중...' : 'Google 계정으로 로그인'}
           </button>
 
           {/* 구분선 */}
