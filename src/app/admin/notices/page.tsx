@@ -1,7 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { firestoreStore, Notice } from '@/lib/firestoreStore';
+import { adminApi } from '@/lib/adminApi';
+import { Notice } from '@/lib/firestoreStore';
 import { Bell, Plus, Pencil, Trash2, Eye, EyeOff } from 'lucide-react';
 
 const emptyNotice = (): Omit<Notice, 'id' | 'createdAt' | 'updatedAt'> & { id: string; createdAt: string; updatedAt: string } =>
@@ -13,18 +14,18 @@ export default function NoticesPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    firestoreStore.notices.getAll().then(data => { setNotices(data); setLoading(false); });
+    adminApi.notices.getAll().then(data => { setNotices(data); setLoading(false); });
   }, []);
 
   const save = async () => {
     if (!editing || !editing.title.trim()) return;
     const isNew = !notices.find(n => n.id === editing.id);
     if (isNew) {
-      const id = await firestoreStore.notices.add({ title: editing.title, content: editing.content, published: editing.published });
+      const id = await adminApi.notices.add({ title: editing.title, content: editing.content, published: editing.published });
       const now = new Date().toISOString();
       setNotices(prev => [{ ...editing, id, createdAt: now, updatedAt: now }, ...prev]);
     } else {
-      await firestoreStore.notices.update(editing.id, { title: editing.title, content: editing.content, published: editing.published });
+      await adminApi.notices.update(editing.id, { title: editing.title, content: editing.content, published: editing.published });
       const now = new Date().toISOString();
       setNotices(prev => prev.map(n => n.id === editing.id ? { ...n, title: editing.title, content: editing.content, published: editing.published, updatedAt: now } : n));
     }
@@ -33,12 +34,12 @@ export default function NoticesPage() {
 
   const del = async (id: string) => {
     if (!confirm('삭제하시겠습니까?')) return;
-    await firestoreStore.notices.delete(id);
+    await adminApi.notices.delete(id);
     setNotices(prev => prev.filter(n => n.id !== id));
   };
 
   const toggle = async (n: Notice) => {
-    await firestoreStore.notices.update(n.id, { published: !n.published });
+    await adminApi.notices.update(n.id, { published: !n.published });
     setNotices(prev => prev.map(item => item.id === n.id ? { ...item, published: !n.published } : item));
   };
 

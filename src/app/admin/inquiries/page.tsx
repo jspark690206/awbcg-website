@@ -1,7 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { firestoreStore, Inquiry } from '@/lib/firestoreStore';
+import { adminApi } from '@/lib/adminApi';
+import { Inquiry } from '@/lib/firestoreStore';
 import { MessageSquare, ChevronDown } from 'lucide-react';
 
 const STATUS_OPTIONS = [
@@ -18,20 +19,20 @@ export default function InquiriesPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    firestoreStore.inquiries.getAll().then(data => { setInquiries(data); setLoading(false); });
+    adminApi.inquiries.getAll().then(data => { setInquiries(data); setLoading(false); });
   }, []);
 
   const filtered = filter === 'all' ? inquiries : inquiries.filter(i => i.status === filter);
 
   const updateStatus = async (id: string, status: Inquiry['status']) => {
-    await firestoreStore.inquiries.update(id, { status });
+    await adminApi.inquiries.update(id, { status });
     setInquiries(prev => prev.map(i => i.id === id ? { ...i, status } : i));
     if (selected?.id === id) setSelected(prev => prev ? { ...prev, status } : null);
   };
 
   const saveReply = async () => {
     if (!selected) return;
-    await firestoreStore.inquiries.update(selected.id, { reply, status: 'done' });
+    await adminApi.inquiries.update(selected.id, { reply, status: 'done' });
     setInquiries(prev => prev.map(i => i.id === selected.id ? { ...i, reply, status: 'done' } : i));
     setSelected(prev => prev ? { ...prev, reply, status: 'done' } : null);
   };

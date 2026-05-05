@@ -1,7 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { firestoreStore, Career } from '@/lib/firestoreStore';
+import { adminApi } from '@/lib/adminApi';
+import { Career } from '@/lib/firestoreStore';
 import { Briefcase, Plus, Pencil, Trash2, Eye, EyeOff } from 'lucide-react';
 
 const emptyCareer = (): Career => ({ id: '', title: '', department: '', type: '정규직', deadline: '', description: '', published: true, createdAt: '' });
@@ -12,18 +13,18 @@ export default function CareersPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    firestoreStore.careers.getAll().then(data => { setCareers(data); setLoading(false); });
+    adminApi.careers.getAll().then(data => { setCareers(data); setLoading(false); });
   }, []);
 
   const save = async () => {
     if (!editing || !editing.title.trim()) return;
     const isNew = !careers.find(c => c.id === editing.id);
     if (isNew) {
-      const id = await firestoreStore.careers.add({ title: editing.title, department: editing.department, type: editing.type, deadline: editing.deadline, description: editing.description, published: editing.published });
+      const id = await adminApi.careers.add({ title: editing.title, department: editing.department, type: editing.type, deadline: editing.deadline, description: editing.description, published: editing.published });
       const now = new Date().toISOString();
       setCareers(prev => [{ ...editing, id, createdAt: now }, ...prev]);
     } else {
-      await firestoreStore.careers.update(editing.id, { title: editing.title, department: editing.department, type: editing.type, deadline: editing.deadline, description: editing.description, published: editing.published });
+      await adminApi.careers.update(editing.id, { title: editing.title, department: editing.department, type: editing.type, deadline: editing.deadline, description: editing.description, published: editing.published });
       setCareers(prev => prev.map(c => c.id === editing.id ? { ...c, ...editing } : c));
     }
     setEditing(null);
@@ -31,12 +32,12 @@ export default function CareersPage() {
 
   const del = async (id: string) => {
     if (!confirm('삭제하시겠습니까?')) return;
-    await firestoreStore.careers.delete(id);
+    await adminApi.careers.delete(id);
     setCareers(prev => prev.filter(c => c.id !== id));
   };
 
   const toggle = async (c: Career) => {
-    await firestoreStore.careers.update(c.id, { published: !c.published });
+    await adminApi.careers.update(c.id, { published: !c.published });
     setCareers(prev => prev.map(item => item.id === c.id ? { ...item, published: !c.published } : item));
   };
 
