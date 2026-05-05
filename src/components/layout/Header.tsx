@@ -85,7 +85,7 @@ export default function Header() {
             <span className="text-white/40">|</span>
             <Link href="/sitemap" className="hover:text-blue-200 transition-colors">SITEMAP</Link>
             <Link href="/admin" className="hover:text-blue-200 transition-colors">ADMIN</Link>
-            <Link href="/en" className="hover:text-blue-200 transition-colors">ENGLISH</Link>
+            <a href="https://eng-sooty.vercel.app" target="_blank" rel="noopener noreferrer" className="hover:text-blue-200 transition-colors">ENGLISH</a>
             <span className="text-white/40">|</span>
             {user ? (
               <div className="flex items-center gap-2">
