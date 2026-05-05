@@ -64,7 +64,7 @@ export default function HeroSection() {
               textShadow: '0 1px 3px rgba(255,255,255,0.8)',
             }}
           >
-            http://www.awbcg.co.kr
+            <a href="/" className="hover:underline" style={{ color: '#0D2B5E' }}>http://www.awbcg.co.kr</a>
           </p>
         </div>
       </div>
