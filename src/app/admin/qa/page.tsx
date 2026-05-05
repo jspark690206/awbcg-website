@@ -1,7 +1,8 @@
 'use client';
 
+import { firestoreStore } from '@/lib/firestoreStore';
 import { useEffect, useState } from 'react';
-import { adminApi } from '@/lib/adminApi';
+
 import { QAItem } from '@/lib/firestoreStore';
 import { HelpCircle, Plus, Pencil, Trash2 } from 'lucide-react';
 
@@ -14,18 +15,18 @@ export default function QAPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    adminApi.qa.getAll().then(data => { setItems(data); setLoading(false); });
+    firestoreStore.qa.getAll().then(data => { setItems(data); setLoading(false); });
   }, []);
 
   const save = async () => {
     if (!editing || !editing.question.trim() || !editing.answer.trim()) return;
     const isNew = !items.find(i => i.id === editing.id);
     if (isNew) {
-      const id = await adminApi.qa.add({ question: editing.question, category: editing.category, answer: editing.answer, published: editing.published });
+      const id = await firestoreStore.qa.add({ question: editing.question, category: editing.category, answer: editing.answer, published: editing.published });
       const now = new Date().toISOString();
       setItems(prev => [{ ...editing, id, createdAt: now }, ...prev]);
     } else {
-      await adminApi.qa.update(editing.id, { question: editing.question, category: editing.category, answer: editing.answer, published: editing.published });
+      await firestoreStore.qa.update(editing.id, { question: editing.question, category: editing.category, answer: editing.answer, published: editing.published });
       setItems(prev => prev.map(i => i.id === editing.id ? { ...i, ...editing } : i));
     }
     setEditing(null);
@@ -33,7 +34,7 @@ export default function QAPage() {
 
   const del = async (id: string) => {
     if (!confirm('삭제하시겠습니까?')) return;
-    await adminApi.qa.delete(id);
+    await firestoreStore.qa.delete(id);
     setItems(prev => prev.filter(i => i.id !== id));
   };
 
