@@ -1,5 +1,5 @@
 import {
-  collection, doc, getDocs, addDoc, updateDoc, deleteDoc,
+  collection, doc, getDocs, addDoc, updateDoc, deleteDoc, setDoc, getDoc,
   query, orderBy, where, serverTimestamp, Timestamp
 } from 'firebase/firestore';
 import { db } from './firebase';
@@ -49,6 +49,15 @@ export interface QAItem {
   createdAt: string;
 }
 
+export interface UserProfile {
+  id: string;       // Firebase UID
+  displayName: string;
+  email: string;
+  photoURL: string;
+  createdAt: string;
+  lastLoginAt: string;
+}
+
 // ─── Helper ──────────────────────────────────────────────
 function toStr(val: unknown): string {
   if (!val) return new Date().toISOString();
@@ -74,6 +83,17 @@ async function update<T extends { id: string }>(col: string, id: string, data: P
 
 async function remove(col: string, id: string): Promise<void> {
   await deleteDoc(doc(db, col, id));
+}
+
+async function upsertUser(uid: string, data: Omit<UserProfile, 'id' | 'createdAt'>): Promise<void> {
+  const ref = doc(db, 'users', uid);
+  const snap = await getDoc(ref);
+  const now = new Date().toISOString();
+  if (snap.exists()) {
+    await updateDoc(ref, { displayName: data.displayName, email: data.email, photoURL: data.photoURL, lastLoginAt: now });
+  } else {
+    await setDoc(ref, { displayName: data.displayName, email: data.email, photoURL: data.photoURL, createdAt: now, lastLoginAt: now });
+  }
 }
 
 async function getByUser<T extends { id: string }>(col: string, userId: string): Promise<T[]> {
