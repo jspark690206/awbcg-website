@@ -12,7 +12,7 @@ export default function ServiceCTA({ serviceName, color }: ServiceCTAProps) {
       className="rounded-2xl p-8 text-center mt-10"
       style={{ background: `linear-gradient(135deg, ${color}, ${color}cc)` }}
     >
-      <h3 className="text-xl font-bold text-white mb-2">
+      <h3 className="text-xl font-bold mb-2" style={{ color: '#FFD700' }}>
         {serviceName} 도입을 검토 중이신가요?
       </h3>
       <p className="text-white/80 text-sm mb-6">
