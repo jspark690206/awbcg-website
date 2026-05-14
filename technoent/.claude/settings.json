@@ -9,7 +9,18 @@
       "PowerShell(git -C \"c:\\\\claude\\\\homepage\" remote -v)",
       "PowerShell(git -C \"c:\\\\claude\\\\homepage\" status --short)",
       "PowerShell(git -C \"c:\\\\claude\\\\homepage\" check-ignore -v service-account.json)",
-      "PowerShell(git -C \"c:\\\\claude\\\\homepage\" add .gitignore technoent/ image/ eng/)"
+      "PowerShell(git -C \"c:\\\\claude\\\\homepage\" add .gitignore technoent/ image/ eng/)",
+      "PowerShell(gh --version 2>$null)",
+      "PowerShell(if \\(-not $?\\) { \"gh CLI not installed\" })",
+      "PowerShell(git -C \"c:\\\\claude\\\\homepage\" rm --cached eng)",
+      "PowerShell(git -C \"c:\\\\claude\\\\homepage\" rm --cached technoent/pnu-notebook)",
+      "PowerShell(git -C \"c:\\\\claude\\\\homepage\" rm --cached -f eng)",
+      "PowerShell(git -C \"c:\\\\claude\\\\homepage\" rm --cached -f technoent/pnu-notebook)",
+      "PowerShell(git -C \"c:\\\\claude\\\\homepage\" add .gitignore)",
+      "Bash(git -C /c/claude/homepage commit -m 'feat: 기창원동문회수첩 기획 자료 및 이미지 추가 *)",
+      "Bash(git -C \"/c/claude/homepage\" push origin master)",
+      "Bash(git -C \"/c/claude/homepage\" status --short)",
+      "Bash(git -C \"/c/claude/homepage\" add technoent/.claude/settings.json \"올윈비시지 홈페이지 기획\\(안\\).pptx\")"
     ],
     "additionalDirectories": [
       "c:\\claude\\homepage"
