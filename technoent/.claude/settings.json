@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(git -C \"c:\\\\claude\\\\homepage\" log --oneline -10)",
+      "PowerShell(Get-ChildItem \"c:\\\\claude\\\\homepage\\\\technoent\\\\pnu-notebook\" -Depth 2 | Where-Object { !$_.FullName.Contains\\(\"node_modules\"\\) -and !$_.FullName.Contains\\(\"\\\\dist\\\\\"\\) } | Select-Object FullName | Sort-Object FullName)",
+      "PowerShell(Get-ChildItem \"c:\\\\claude\\\\homepage\\\\technoent\\\\pnu-notebook\\\\app\" -Recurse | Where-Object { !$_.PSIsContainer } | Select-Object FullName | Sort-Object FullName)",
+      "PowerShell(Get-ChildItem \"c:\\\\claude\\\\homepage\\\\technoent\\\\pnu-notebook\\\\src\" -Recurse | Where-Object { !$_.PSIsContainer } | Select-Object FullName | Sort-Object FullName)",
+      "PowerShell(netstat -ano)",
+      "PowerShell(git -C \"c:\\\\claude\\\\homepage\" remote -v)",
+      "PowerShell(git -C \"c:\\\\claude\\\\homepage\" status --short)",
+      "PowerShell(git -C \"c:\\\\claude\\\\homepage\" check-ignore -v service-account.json)",
+      "PowerShell(git -C \"c:\\\\claude\\\\homepage\" add .gitignore technoent/ image/ eng/)"
+    ],
+    "additionalDirectories": [
+      "c:\\claude\\homepage"
+    ]
+  }
+}
